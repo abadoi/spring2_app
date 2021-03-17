@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 @Service
 public class CurrencyService implements ICurrencyService {
+
     @Autowired
     WebClient webClient;
 
@@ -19,17 +20,12 @@ public class CurrencyService implements ICurrencyService {
 //        ConversionResponse responseMono = new ConversionResponse("EUR", "USD", 12, 13);
 
 //        Mono<ConversionResponse> result = webClient.get()
-////                .uri("/latest")
 //                .accept(MediaType.APPLICATION_JSON)
 //                .retrieve()
 //                .bodyToMono(CurrencyAPIResponse.class)
-//                .flatMap(jsonObject -> {
-//                    JSONObject rates =  (JSONObject) jsonObject.rates;
-////                    String rates = (String) jsonObject.get("rates");
-//                    double currency_rate = 0.1;
-////                    String rates = jsonObject.rates;
-////                    double currency_rate = (double) rates.get("USD");
-////                    double currency_rate = jsonObject.rates.getDouble("USD");
+//                .map(currencyAPIResponse -> {
+//                    double currency_rate = currencyAPIResponse.rates.get("USD");
+//
 //                    return e.map(p -> {
 //                        ConversionResponse response = new ConversionResponse();
 //                        response.setFrom(p.getFrom());
@@ -47,18 +43,18 @@ public class CurrencyService implements ICurrencyService {
             response.setFrom(request.getFrom());
             response.setTo(request.getTo());
             response.setAmount(request.getAmount());
-//            Mono<Double> rate = webClient.get()
-//                    .uri(uriBuilder -> uriBuilder
-//                            .path("/latest")
-//                            .queryParam("base", request.getFrom())
-//                            .build())
-//                    .retrieve()
-//                    .bodyToMono(CurrencyAPIResponse.class)
-//                    .map(jsonObject -> {
-//                        double currency_rate = jsonObject.rates.get("USD");
-//                        return currency_rate;
-//                    });
-//            rate.map(r -> response.setConverted(r));
+            Mono<ConversionResponse> rate = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/latest")
+                            .queryParam("base", request.getFrom())
+                            .build())
+                    .retrieve()
+                    .bodyToMono(CurrencyAPIResponse.class)
+                    .map(jsonObject -> {
+                        double currency_rate = jsonObject.rates.get("USD");
+                        response.setConverted(currency_rate * request.getAmount());
+                        return response;
+                    });
             return response;
         });
 
@@ -70,14 +66,10 @@ public class CurrencyService implements ICurrencyService {
 //                .retrieve()
 //                .bodyToMono(CurrencyAPIResponse.class)
 //                .map(jsonObject -> {
-////                    JSONObject rates =  (JSONObject) jsonObject.getJSONObject("rates");
 //                    double currency_rate = jsonObject.rates.get("USD");
 //
-////                    double currency_rate = (double) rates.get("USD");
 //                    return currency_rate;
 //                })
-////                .bodyToMono(CurrencyAPIResponse.class)
-////                .map(response -> response.rates)
 //                .share().block();
 //
 //        return Mono.just(responseMono);
