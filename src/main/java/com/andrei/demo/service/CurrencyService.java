@@ -5,7 +5,6 @@ import com.andrei.demo.models.ConversionResponse;
 import com.andrei.demo.models.CurrencyAPIResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,7 +34,6 @@ public class CurrencyService implements ICurrencyService {
                 .onErrorResume(t -> Exceptions.isRetryExhausted(t), t ->
                         webClient.get()
                                 .uri("https://api.exchangerate-api.com/v4/latest/" + e.getTo())
-                                .accept(MediaType.TEXT_PLAIN)
                                 .retrieve()
                                 .onStatus(HttpStatus::isError, response -> response.bodyToMono(String.class) // error body as String or other class
                                         .flatMap(error -> Mono.error(new ResponseStatusException(response.statusCode(), "No conversion providers are currently available."))))
