@@ -15,7 +15,7 @@ Spring Boot Webflux Project, build in a Maven Docker and run in Docker, helps to
 # Run Project
 
 - `docker-compose up`: Create and Start Docker Instances;
-- `docker ps`: 
+- `docker ps`: Check docker instances
 - `http://localhost:8080/`: The endpoint
 
 # Rebuild the Project after changes
