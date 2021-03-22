@@ -17,6 +17,9 @@ import java.time.Duration;
 
 @Service
 public class CurrencyService implements ICurrencyService {
+
+    private final String SECOND_URL = "https://api.exchangerate-api.com/v4/latest/";
+
     @Autowired
     WebClient webClient;
 
@@ -30,10 +33,10 @@ public class CurrencyService implements ICurrencyService {
                         .build())
                 .retrieve()
                 .bodyToMono(CurrencyAPIResponse.class)
-                .retryWhen(Retry.backoff(3, Duration.ofSeconds(3)))
+                .retryWhen(Retry.backoff(3, Duration.ofSeconds(3))) // retry 3 times
                 .onErrorResume(t -> Exceptions.isRetryExhausted(t), t ->
                         webClient.get()
-                                .uri("https://api.exchangerate-api.com/v4/latest/" + e.getTo())
+                                .uri(SECOND_URL + e.getTo()) // try different conversion provider
                                 .retrieve()
                                 .onStatus(HttpStatus::isError, response -> response.bodyToMono(String.class) // error body as String or other class
                                         .flatMap(error -> Mono.error(new ResponseStatusException(response.statusCode(), "No conversion providers are currently available."))))

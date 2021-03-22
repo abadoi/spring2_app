@@ -26,6 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @EnableWebFlux
 public class WebFluxConfig implements WebFluxConfigurer
 {
+    private final String BASE_URL = "https://api.exchangeratesapi.io/";
 
     private void acceptedCodecs(ClientCodecConfigurer clientCodecConfigurer) {
         clientCodecConfigurer.customCodecs().register(new Jackson2JsonEncoder(new ObjectMapper(), APPLICATION_JSON));
@@ -46,7 +47,7 @@ public class WebFluxConfig implements WebFluxConfigurer
 
 
         return WebClient.builder()
-                .baseUrl("https://api.exchangeratesapi.io/")
+                .baseUrl(BASE_URL)
                 .clientConnector(connector)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .exchangeStrategies(ExchangeStrategies.builder().codecs(this::acceptedCodecs).build())

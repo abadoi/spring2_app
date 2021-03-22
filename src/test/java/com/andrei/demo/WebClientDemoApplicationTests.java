@@ -4,14 +4,17 @@ import com.andrei.demo.controller.CurrencyController;
 import com.andrei.demo.models.ConversionRequest;
 import com.andrei.demo.service.CurrencyService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
 
+@ExtendWith(SpringExtension.class)
 @WebFluxTest(controllers = CurrencyController.class)
 @Import(CurrencyService.class)
 public class WebClientDemoApplicationTests {
@@ -34,10 +37,6 @@ public class WebClientDemoApplicationTests {
                 .expectBody()
                 .jsonPath("$.converted").isNotEmpty();
 
-    }
-
-    @Test
-    void contextLoads() {
     }
 
 }
